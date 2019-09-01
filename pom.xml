@@ -10,6 +10,9 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>userAnalyServer</module>
+        <module>userRegiterCenter</module>
+        <module>userInfoInService</module>
+        <module>userCommon</module>
     </modules>
 
 

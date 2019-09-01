@@ -55,6 +55,12 @@ hbase环境搭建：
 
 5.邮件运营商标签代码编写：
 
+    3、4、5涉及到的文件及内容
+    test.txt
+    1,张三,1,13045678909,zhangsan@139.com,20,2019-01-01 00:00:00,0
+    2,李四,2,13345678909,lisi@163.com,40,2019-01-01 00:00:00,1
+    3,王五,2,13845678909,wangwu@aliyun.com,50,2019-01-01 00:00:00,2
+    4,赵柳,1,18145678909,zhouliu@sina.com,14,2019-01-01 00:00:00,3
 6.还原真实消费信息表结构定义
 	1.用户订单表
 	2.商品表
@@ -99,3 +105,35 @@ CREATE TABLE `product_type_info` (
 
 7.败家指数：
 	败家指数 = 支付金额平均值*0.3、最大支付金额*0.3、下单频率*0.4
+    orderinfo.txt
+    1,1,1,20190708 123420,50,1,20190708 123420,1,20,70,0,2,1
+    1,1,1,20190708 123420,70,1,20190808 123420,1,20,90,0,2,1
+    1,1,1,20190708 123420,50,1,20190708 123420,1,20,70,0,2,2
+    1,1,1,20190708 123420,70,1,20190808 123420,1,20,90,0,2,2
+    1,1,1,20190708 123420,50,1,20180708 123420,1,20,70,0,2,2
+    1,1,1,20190708 123420,70,1,20190824 123420,1,20,90,0,2,2
+8.日志分析
+
+9.搭建kafka环境 kafka_2.11-0.10.2.1
+    修改配置文件
+    vim server.properties
+    log.dirs=/usr/local/app/kafka_2.11-0.10.2.1/kafka-logs
+
+    执行kafka
+    bin/kafka-server-start.sh config/server.properties
+
+    创建topic
+    attentionProductLog
+    buyCartProductLog
+    collectProductLog
+    scanProductLog
+    进入到bin目录下
+    ./kafka-topics.sh --create --topic attentionProductLog --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 1
+    ./kafka-topics.sh --create --topic buyCartProductLog --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 1
+    ./kafka-topics.sh --create --topic collectProductLog --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 1
+    ./kafka-topics.sh --create --topic scanProductLog --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 1
+
+    监听消息：
+     ./kafka-console-consumer.sh --zookeeper 127.0.0.1:2181 --topic attentionProductLog
+
+    测试：http://127.0.0.1:8762/infolog/receivelog?recevicelog=AttentionProductLog:{"productid":2}
