@@ -3,7 +3,7 @@ package com.ljj.log;
 import java.io.Serializable;
 
 /**
- * Created by li on 2019/1/6.
+ * 浏览
  */
 public class ScanProductLog implements Serializable{
      private int productid;//商品id

@@ -8,7 +8,7 @@ import org.apache.flink.api.common.functions.MapFunction;
 
 
 public class CarrierMap implements MapFunction<String , CarrierInfo> {
-    @Override
+    //@Override
     public CarrierInfo map(String s) throws Exception {
         if(StringUtils.isBlank(s)){
             return null;

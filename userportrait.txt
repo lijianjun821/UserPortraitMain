@@ -31,14 +31,108 @@
 
 2.项目框架搭建
 
-首先创建主项目：UserPortraitMain
-分析模块：userAnalyServer
+* 首先创建主项目：UserPortraitMain
+* 分析模块：userAnalyServer
 
-给main方法传参  --input hdfs://192.168.2.100:9000/test.txt
+* 给main方法传参  --input hdfs://192.168.2.100:9000/test.txt
 
-hadoop环境搭建：
-zookeeper搭建：
-hbase环境搭建：
+* hadoop-2.6.0-cdh5.7.0环境搭建：
+* zookeeper-3.4.5-cdh5.7.0搭建：
+    1.解压 tar -zxvf zookeeper-3.4.5-cdh5.7.0.tar.gz
+    2.进入到conf目录下：cp zoo_sample.cfg zoo.cfg
+    3.修改zoo.cfg文件
+        dataDir=/usr/local/app/zookeeper-3.4.5-cdh5.7.0/data
+    4.配置环境变量 vi /etc/profile  source /etc/profile
+        #ZK_HOME
+        export ZK_HOME=/usr/local/app/zookeeper-3.4.5-cdh5.7.0
+        export PATH=$PATH:$ZK_HOME/bin
+    5.启动；
+        zkServer.sh start
+    6.验证
+        zkServer.sh status
+* hbase-1.2.0-cdh5.7.0环境搭建：
+    1.解压 tar -zxvf hbase-1.2.0-cdh5.7.0.tar.gz
+    2.进入到conf目录下：
+        (1)修改hbase-site.xml
+            <configuration>
+                <property>
+                  <name>hbase.rootdir</name>
+                  <value>hdfs://atljj:9000/hbase</value>
+                </property>
+                <property>
+                  <name>hbase.cluster.distributed</name>
+                  <value>true</value>
+                </property>
+                <property>
+                  <name>hbase.zookeeper.quorum</name>
+                  <value>atljj</value>
+                </property>
+                <property>
+                  <name>dfs.replication</name>
+                  <value>1</value>
+                </property>
+            </configuration>
+        （2）修改hbase-env.sh
+             export JAVA_HOME=/usr/local/app/jdk
+        （3）修改regionservers
+              atljj
+    3.配置环境变量 vi /etc/profile  source /etc/profile
+        #HBASE_HOME
+        export HBASE_HOME=/usr/local/app/hbase-1.2.0-cdh5.7.0
+        export PATH=$PATH:$HBASE_HOME/bin
+
+    4.启动
+        start-hbase.sh
+    5.测试是否安装成功
+        hbase访问路径：http://192.168.2.100:60010
+* mongodb-linux-x86_64-2.6.0环境搭建：
+    1.解压 tar -zxvf gzmongodb-linux-x86_64-2.6.0.tgz
+    2.进入到mongodb-linux-x86_64-2.6.0  ，创建文件夹 mkdir data
+    3.配置环境变量 vi /etc/profile  source /etc/profile
+        #MONGO_HOME
+        export MONGO_HOME=/usr/local/app/mongodb-linux-x86_64-2.6.0
+        export PATH=$PATH:$MONGO_HOME/bin
+    4.启动MongoDB：
+        mongod --dbpath=data（注释：data为之前创建好的目录，此时在当前目录下）
+    5.验证MongoDB：
+        另开一个窗口，输入 mongo 进入命令行，输入show dbs;
+* flume-ng-1.6.0-cdh5.7.0.tar.gz环境搭建：
+    1.解压 tar -zxvf flume-ng-1.6.0-cdh5.7.0.tar.gz
+    2.进入到conf目录下，配置 flume-conf.properties
+        scanProductLog.sources  = s1
+        scanProductLog.channels = c1
+        scanProductLog.sinks = s1
+
+        scanProductLog.sources.s1.type = org.apache.flume.source.kafka.KafkaSource
+        scanProductLog.sources.s1.zookeeperConnect = 192.168.2.100:2181
+        scanProductLog.sources.s1.topic = scanProductLog
+        scanProductLog.sources.s1.groupId = ty1
+        scanProductLog.sources.s1.channels = c1
+        scanProductLog.sources.s1.interceptors = i1
+        scanProductLog.sources.s1.interceptors.i1.type = timestamp
+        scanProductLog.sources.s1.kafka.consumer.timeout.ms = 1000
+
+        scanProductLog.channels.c1.type = memory
+        scanProductLog.channels.c1.capacity = 1000
+        scanProductLog.channels.c1.transactionCapacity = 1000
+
+        scanProductLog.sinks.s1.type = hdfs
+        scanProductLog.sinks.s1.hdfs.path = hdfs://192.168.2.100:9000/data/kafka/scanProductLog/%y-%m-%d
+        scanProductLog.sinks.s1.hdfs.fileType = DataStream
+        scanProductLog.sinks.s1.hdfs.writeFormat=TEXT
+        scanProductLog.sinks.s1.hdfs.filePrefix = flumeHdfs
+        scanProductLog.sinks.s1.batchSize = 1000
+        scanProductLog.sinks.s1.rollSize = 10240
+        scanProductLog.sinks.s1.rollCount = 0
+        scanProductLog.sinks.s1.rollInterval = 30
+        scanProductLog.sinks.s1.useLocalTimeStamp = true
+        scanProductLog.sinks.s1.channel = c1
+
+    3.启动
+        bin/flume-ng agent --conf conf --conf-file conf/flume-conf.properties --name scanProductLog -Dflume.root.logger=INFO,console
+        后台启动
+            不输出日志：
+                nohup bin/flume-ng agent --conf conf --conf-file conf/flume-conf.properties --name scanProductLog -Dflume.root.logger=INFO,console 1>/dev/null 2>&1 &
 
 启动集群：
 启动zk：zkServer.sh start
@@ -115,25 +209,27 @@ CREATE TABLE `product_type_info` (
 8.日志分析
 
 9.搭建kafka环境 kafka_2.11-0.10.2.1
-    修改配置文件
-    vim server.properties
-    log.dirs=/usr/local/app/kafka_2.11-0.10.2.1/kafka-logs
+    1.解压 tar -zxvf kafka_2.11-0.10.2.1.tgz
+    2.修改配置文件
+        vim server.properties
+            log.dirs=/usr/local/app/kafka_2.11-0.10.2.1/kafka-logs
+    3.执行kafka
+        bin/kafka-server-start.sh config/server.properties
+        后台启动：
+            输出日志：
+            bin/kafka-server-start.sh config/server.properties 1> logs/start.log 2>&1 &
+            不输出日志：
+            nohup bin/kafka-server-start.sh config/server.properties 1>/dev/null 2>&1 &
+    4.创建topic  (attentionProductLog、buyCartProductLog、collectProductLog、scanProductLog）
+        进入到bin目录下
+        ./kafka-topics.sh --create --topic attentionProductLog --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 1
+        ./kafka-topics.sh --create --topic buyCartProductLog --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 1
+        ./kafka-topics.sh --create --topic collectProductLog --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 1
+        ./kafka-topics.sh --create --topic scanProductLog --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 1
 
-    执行kafka
-    bin/kafka-server-start.sh config/server.properties
+    5.监听消息：
+        ./kafka-console-consumer.sh --zookeeper 127.0.0.1:2181 --topic attentionProductLog
 
-    创建topic
-    attentionProductLog
-    buyCartProductLog
-    collectProductLog
-    scanProductLog
-    进入到bin目录下
-    ./kafka-topics.sh --create --topic attentionProductLog --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 1
-    ./kafka-topics.sh --create --topic buyCartProductLog --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 1
-    ./kafka-topics.sh --create --topic collectProductLog --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 1
-    ./kafka-topics.sh --create --topic scanProductLog --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 1
-
-    监听消息：
-     ./kafka-console-consumer.sh --zookeeper 127.0.0.1:2181 --topic attentionProductLog
-
-    测试：http://127.0.0.1:8762/infolog/receivelog?recevicelog=AttentionProductLog:{"productid":2}
+    6.测试：
+        http://127.0.0.1:8762/infolog/receivelog?recevicelog=AttentionProductLog:{"productid":2}
+        http://127.0.0.1:8762/infolog/receivelog?recevicelog=ScanProductLog:{"productid":2}

@@ -1,7 +1,7 @@
 package com.ljj.log;
 
 /**
- * Created by li on 2019/1/6.
+ * 商品关注
  */
 public class CollectProductLog {
     private int productid;//商品id
