@@ -6,6 +6,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="user-analy-server" />
+        <module name="user-common" />
+        <module name="user-info-in-service" />
+        <module name="user-regiter-center" />
         <module name="userAnalyServer" />
         <module name="userCommon" />
         <module name="userInfoInService" />
@@ -15,6 +19,8 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="user-info-in-service" options="-parameters" />
+      <module name="user-regiter-center" options="-parameters" />
       <module name="userAnalyServer" options="" />
       <module name="userInfoInService" options="-parameters" />
       <module name="userRegiterCenter" options="-parameters" />
