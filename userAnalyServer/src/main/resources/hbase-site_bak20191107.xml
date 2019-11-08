@@ -21,21 +21,21 @@
  */
 -->
 <configuration>
-    <property>
-        <name>hbase.rootdir</name>
-        <value>hdfs://hadoop101:9000/hbase</value>
-    </property>
-    <property>
-        <name>hbase.cluster.distributed</name>
-        <value>true</value>
-    </property>
-    <property>
-        <name>hbase.zookeeper.quorum</name>
-        <value>hadoop101</value>
-    </property>
-    <property>
-        <name>dfs.replication</name>
-        <value>1</value>
-    </property>
+<property>
+  <name>hbase.rootdir</name>
+  <value>hdfs://atljj:9000/hbase</value>
+</property>
+<property>
+  <name>hbase.cluster.distributed</name>
+  <value>true</value>
+</property>
+<property>
+  <name>hbase.zookeeper.quorum</name>
+  <value>atljj</value>
+</property>
+<property>
+  <name>dfs.replication</name>
+  <value>1</value>
+</property>
 
 </configuration>

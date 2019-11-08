@@ -1,3 +1,21 @@
+启动集群
+启动hdfs、yarn
+start-dfs.sh  start-yarn.sh
+启动 zk
+zkServer.sh start    zkServer.sh status
+启动 hbase
+start-hbase.sh
+hbase-daemon.sh start thrift
+启动 hive
+nohup hive --service metastore 1>/dev/null 2>&1 &
+nohup hive --service hiveserver2 1>/dev/null 2>&1 &
+启动 hue 进入到hue目录下
+build/env/bin/supervisor &
+启动 mongodb  进入到mongodb目录下
+bin/mongodb.sh start
+启动kafka  进入到kafka目录下
+nohup bin/kafka-server-start.sh config/server.properties 1>/dev/null 2>&1 &
+
 1.基础信息画像分析
     基础数据来自业务表，主要有两张表的信息
 

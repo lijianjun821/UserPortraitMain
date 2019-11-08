@@ -14,7 +14,7 @@ import org.bson.types.ObjectId;
  */
 public class MongoUtils {
 
-    private static MongoClient mongoClient = new MongoClient("192.168.2.100",27017);
+    private static MongoClient mongoClient = new MongoClient("192.168.2.101",27017);
 
 
 

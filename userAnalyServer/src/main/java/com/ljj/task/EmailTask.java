@@ -44,7 +44,7 @@ public class EmailTask {
                 }
                 MongoUtils.saveorupdatemongo("emailstatics","userPortrait",doc);
             }
-            env.execute("email analy");
+            //env.execute("email analy");
         } catch (Exception e) {
             e.printStackTrace();
         }

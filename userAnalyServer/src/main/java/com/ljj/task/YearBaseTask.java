@@ -44,7 +44,7 @@ public class YearBaseTask {
                 }
                 MongoUtils.saveorupdatemongo("yearbasestatics","userPortrait",doc);
             }
-            env.execute("year base analy");
+            //env.execute("year base analy");
         } catch (Exception e) {
             e.printStackTrace();
         }
