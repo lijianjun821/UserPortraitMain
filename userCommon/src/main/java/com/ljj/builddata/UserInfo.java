@@ -1,10 +1,14 @@
 package com.ljj.builddata;
 
+import com.ljj.utils.JDBCHelper;
+
 import java.io.UnsupportedEncodingException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Date;
 
 public class UserInfo {
     private static Random rand;
@@ -12,19 +16,12 @@ public class UserInfo {
     private static String base;
     private static String[] telFirst;
     private static String[] terminalType;
-    private static  Connection con = null; //定义一个MYSQL链接对象
-    private static PreparedStatement pstmt =null; //创建声明
     static{
         rand=new Random();
         email_suffix="@gmail.com,@yahoo.com,@msn.com,@hotmail.com,@aol.com,@ask.com,@live.com,@qq.com,@0355.net,@163.com,@163.net,@263.net,@3721.net,@yeah.net,@googlemail.com,@126.com,@sina.com,@sohu.com,@yahoo.com.cn".split(",");
         base = "abcdefghijklmnopqrstuvwxyz0123456789";
         telFirst="134,135,136,137,138,139,150,151,152,157,158,159,130,131,132,155,156,133,153".split(",");
         terminalType="pc端,移动端,小程序端".split(",");
-        try {
-            Class.forName("com.mysql.jdbc.Driver"); //MYSQL驱动
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
     }
     private UserInfo(){};
     /**
@@ -304,7 +301,7 @@ public class UserInfo {
 
     public static void main(String[] args) {
 
-        int  num=100 ;
+        int  num=100000 ;
         List<String> userids=getUserIds(new ArrayList(), num);
 		List<String> passwords=getPasswords(num,8);
 		List<String> names=getChineseNames(num);
@@ -315,6 +312,9 @@ public class UserInfo {
 		List<String> dates=getDate("2018-01-10","2019-11-10",num);
 		List<String> terminaltypes=getTerminalType(num);
 
+        String sql = "INSERT INTO user_info (user_id,password,user_name, tel_phone,email,sex,age,register_time,user_type) " +
+                "VALUES (?,?,?,?,?,?,?,?,?)";
+        List<Object[]> paramsList = new ArrayList<Object[]>();
 		for (int i =0;i<num;i++) {
             String userid =  userids.get(i);
             String password =  passwords.get(i);
@@ -325,44 +325,12 @@ public class UserInfo {
             int age =  ages.get(i);
             String date =  dates.get(i);
             String terminaltype =  terminaltypes.get(i);
-            try {
-
-                con = DriverManager.getConnection("jdbc:mysql://192.168.2.101:3306/user_portrait", "root", "123456"); //链接本地MYSQL
-                String sql = "INSERT INTO user_info (user_id,password,user_name, tel_phone,email,sex,age,register_time,user_type) " +
-                        "VALUES (?,?,?,?,?,?,?,?,?)";
-                pstmt = con.prepareStatement(sql);
-                //新增一条数据
-                pstmt.setString(1,userid);
-                pstmt.setString(2,password);
-                pstmt.setString(3,name);
-                pstmt.setString(4,telephone);
-                pstmt.setString(5,email);
-                pstmt.setString(6,sex);
-                pstmt.setInt(7,age);
-                pstmt.setString(8,date);
-                pstmt.setString(9,terminaltype);
-                pstmt.executeUpdate();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (pstmt != null) {
-                    try {
-                        pstmt.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+            System.out.println("添加了 "+ i+1 +"行");
+            Object[] params = {userid,password,name,telephone,email,sex,age,date,terminaltype};
+            paramsList.add(params);
 
         }
+        JDBCHelper.getInstance().executeBatch(sql,paramsList);
 
     }
 }
